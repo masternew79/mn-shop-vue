@@ -1,5 +1,5 @@
-import axios from 'axios'
 import router from './../../router'
+import CheckoutService from '../../services/checkout-service'
 
 const state = {
     step: 1,
@@ -46,7 +46,7 @@ const actions = {
     async getProvinces({commit, dispatch }) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         try {
-            const response = await axios.get(`https://masternew.herokuapp.com/mn-shop/api/v1/provinces`)
+            const response = await CheckoutService.getProvinces()
             commit('SET_PROVINCES', response.data.map(province => {
                 return {
                     text: province.name,
@@ -62,7 +62,7 @@ const actions = {
     async getDistricts({commit}, parentCode) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         try {
-            const response = await axios.get(`https://masternew.herokuapp.com/mn-shop/api/v1/districts/${parentCode}`)
+            const response = await CheckoutService.getDistricts(parentCode)
             commit('SET_DISTRICTS', response.data.map(district => {
                 return {
                     text: district.name,
@@ -78,7 +78,7 @@ const actions = {
     async getWards({commit}, parentCode) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         try {
-            const response = await axios.get(`https://masternew.herokuapp.com/mn-shop/api/v1/wards/${parentCode}`)
+            const response = await CheckoutService.getWards(parentCode)
             commit('SET_WARDS', response.data.map(ward => {
                 return { text: ward.name, value: ward.code }
             }));
@@ -91,13 +91,11 @@ const actions = {
     async placeOrder({commit, dispatch}, order) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         try {
-            await axios.post(`https://masternew.herokuapp.com/mn-shop/api/v1/orders`, order)
-
+            await CheckoutService.placeOrder(order)
             //Redirect to home
             router.push({name: 'home'})
             dispatch('cart/clearCart', null, {root: true});
 
-            // Update products
             const message = "Place order successfully."
             dispatch('app/showSnackbar', {message, color: 'teal'}, {root: true})
         } catch (error) {

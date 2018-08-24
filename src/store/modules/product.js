@@ -1,4 +1,4 @@
-import axios from 'axios'
+import ProductService from '../../services/product-service'
 
 const state = {
     products: [],
@@ -29,11 +29,21 @@ const mutations = {
     SET_FAVORITES(state, favorites) {
         state.favorites = favorites
     },
+    ADD_TO_FAVORITES(state, id) {
+        const index = state.favorites.findIndex(item => item == id)
+        if (index == -1) state.favorites.push(id);
+    },
+    REMOVE_FROM_FAVORITES(state, id) {
+        const index = state.favorites.findIndex(item => item == id)
+        if (index != -1) state.favorites.splice(index, 1)
+    },
     ADD_TO_FAVORITE_ITEMS(state, product) {
         const existItem = state.favoriteItems.find(item => item._id == product._id)
-        if(!existItem) {
-            state.favoriteItems.push(product)
-        }
+        if(!existItem) state.favoriteItems.push(product)
+    },
+    REMOVE_FROM_FAVORITE_ITEMS(state, id) {
+        const index = state.favoriteItems.findIndex(item => item._id == id)
+        if (index != -1) state.favoriteItems.splice(index, 1)
     }
 }
 
@@ -41,26 +51,24 @@ const actions = {
     async getProducts({commit, rootGetters, dispatch }) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         commit('SET_PRODUCTS', [])
-        // Get query params
         let queryParams = rootGetters['filter/queryParams'].string;
 
         try {
-            const response = await axios.get(`https://masternew.herokuapp.com/mn-shop/api/v1/products?${queryParams}`)
-
+            const response = await ProductService.getProducts(queryParams)
             commit('SET_PRODUCTS', response.data.data)
             commit('filter/SET_TOTAL_PAGE', response.data.lastPage, {root: true})
             commit('app/SET_APP_IS_ERROR', false, { root: true})
         } catch (error) {
             const message = "Could not get products!."
             dispatch('app/showSnackbar', {message}, {root: true})
-            commit('app/SET_APP_IS_ERROR', false, { root: true})
+            commit('app/SET_APP_IS_ERROR', true, { root: true})
         }
         commit('app/SET_PROGRESS_LINEAR', false, { root: true})
     },
     async getProduct({commit}, id) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         try {
-            const response = await axios.get(`https://masternew.herokuapp.com/mn-shop/api/v1/products/${id}`)
+            const response = await await ProductService.getProduct(id)
             // Update product
             commit('SET_PRODUCT', response.data.data)
             commit('app/SET_APP_IS_ERROR', false, { root: true})
@@ -75,7 +83,7 @@ const actions = {
         // Clear products
         commit('SET_RELATED_PRODUCTS', [])
         try {
-            const response = await axios.get(`https://masternew.herokuapp.com/mn-shop/api/v1/products?limit=8&cate=${category}`)
+            const response = await ProductService.getRelatedProduct(category)
             // Update products
             const products = response.data.data
             commit('SET_RELATED_PRODUCTS', products)
@@ -85,36 +93,33 @@ const actions = {
             dispatch('app/showSnackbar', {message}, {root: true})
         }
     },
-    updateFavorites({commit, dispatch, rootState}, favorites) {
+    updateFavorites({dispatch, rootState}, favorites) {
         return new Promise(async (resolve, reject) => {
             try {
-                await axios({
-                    method: 'PUT',
-                    url: `https://masternew.herokuapp.com/mn-shop/api/v1/users/${rootState.user.id}`,
-                    data: { favorites },
-                    headers: { Authorization: `Bareer ${rootState.user.token}` }
-                })
-                commit('SET_FAVORITES', favorites)
+                const payload = {
+                    userId: rootState.user.id,
+                    favorites,
+                    token: rootState.user.token
+                }
+                await ProductService.putFavoriteProducts(payload)
                 // Update localStorage
                 dispatch('app/setLocalStorage', null, {root: true})
                 resolve(true)
             } catch (error) {
+                console.log(error.response);
                 reject(false)
             }
         })
     },
     async setFavorite({commit, dispatch, state}, {id, action}) {
         commit('app/SET_PROGRESS_CIRCLE', true, { root: true})
-        // Add to temp before update state
-        let favorites = [...state.favorites]
         if (action == 'add') {
-            favorites.push(id);
+            commit('ADD_TO_FAVORITES', id)
         } else {
-            const index = favorites.findIndex(item => item == id)
-            if (index != -1) favorites.splice(index, 1)
+            commit('REMOVE_FROM_FAVORITES', id)
+            commit('REMOVE_FROM_FAVORITE_ITEMS', id)
         }
-
-        const result = await dispatch('updateFavorites', favorites)
+        const result = await dispatch('updateFavorites', state.favorites)
         if(result) {
             const message = `Successful ${action} this product to favorites!.`
             dispatch('app/showSnackbar', {message, color: 'teal'}, {root: true})
@@ -124,12 +129,13 @@ const actions = {
         }
         commit('app/SET_PROGRESS_CIRCLE', false, { root: true})
     },
-    // Use when to create favorite component
-    getFavorites({commit, state}) {
+    getFavoriteItems({commit, state}) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         state.favorites.forEach(product => {
-            axios.get(`https://masternew.herokuapp.com/mn-shop/api/v1/products/${product}`)
-            .then( response => { commit('ADD_TO_FAVORITE_ITEMS', response.data.data) })
+            ProductService.getProduct(product)
+            .then( response => {
+                commit('ADD_TO_FAVORITE_ITEMS', response.data.data)
+            })
         })
         commit('app/SET_PROGRESS_LINEAR', false, { root: true})
     }

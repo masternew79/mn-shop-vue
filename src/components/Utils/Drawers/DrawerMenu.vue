@@ -51,7 +51,7 @@
             <v-list-tile
                 @click="resetQuery"
                 router
-                to="/changepassword"
+                to="/changePassword"
                 v-if="authenticated">
                 <v-list-tile-action>
                     <v-icon color="black">lock_open</v-icon>

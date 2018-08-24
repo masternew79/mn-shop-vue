@@ -23,7 +23,7 @@
             ...mapGetters({
                 progressLinear: 'app/progressLinear',
                 orderPrice: 'filter/orderPrice',
-                query: 'filter/query'
+                query: 'filter/queryParams'
             })
         },
         watch: {

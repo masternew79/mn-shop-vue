@@ -1,14 +1,14 @@
 <template>
-<v-navigation-drawer
-    class="hidden-sm-and-up elevation-1"
-    v-model="drawerFilter"
-    app
-    touchless
-    right
-    temporary
-    width="270">
-    <app-sidebar></app-sidebar>
-</v-navigation-drawer>
+    <v-navigation-drawer
+        class="hidden-sm-and-up elevation-1"
+        v-model="drawerFilter"
+        app
+        touchless
+        right
+        temporary
+        width="270">
+        <app-sidebar></app-sidebar>
+    </v-navigation-drawer>
 </template>
 
 <script>

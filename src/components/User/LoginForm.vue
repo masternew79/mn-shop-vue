@@ -22,7 +22,6 @@
                         email: this.email,
                         password: this.password
                     }
-
                     this.$store.dispatch('user/login', user)
                 }
             }
@@ -93,6 +92,16 @@
                         Login
                     </v-btn>
                 </v-flex>
+                <!-- <v-flex xs12 class="text-xs-right">
+                    <v-btn
+                        flat
+                        router
+                        small
+                        to="/forgotPassword">
+                        <v-icon left>settings_backup_restore</v-icon>
+                        Forgot password
+                    </v-btn>
+                </v-flex> -->
             </v-layout>
         </v-card>
     </div>

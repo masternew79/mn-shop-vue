@@ -21,6 +21,7 @@
             return {
                 quantity: 1,
                 index: null,
+                url: window.location.href
             }
         },
         methods: {
@@ -56,9 +57,6 @@
                         this.$store.dispatch('product/setFavorite', {id: this.product._id, action: 'add'})
                     }
                 }
-            },
-            url() {
-                return window.location.href
             }
         },
         computed: {
@@ -87,19 +85,7 @@
                 }
                 await this.$store.dispatch('product/getRelatedProducts', this.product.category._id)
             }
-        },
-        metaInfo() {
-            return {
-                title: 'Master New Shop Vue',
-                meta: [
-                    { property: 'og:title', content: 'MasterNew Shop - Using Vue.js' },
-                    { property: 'og:type', content: 'website' },
-                    { property: 'og:description', content: 'MasterNew Shop demo for my knowledge about vue.js frameword.' },
-                    { property: 'og:image', content: this.product.image },
-                    { property: 'fb:app_id', content: 'MasterNew Shop - Using Vue.js' },
-                ]
-            }
-    }
+        }
     }
 </script>
 
@@ -148,7 +134,7 @@
             </v-layout>
         </content-placeholders>
 
-        <v-layout row wrap container xs12 sm10 v-if="product || !progressLinear">
+        <v-layout row wrap container xs12 sm10 v-if="product && !progressLinear">
             <!-- Images -->
             <v-flex xs12 sm5>
                 <v-layout wrap>

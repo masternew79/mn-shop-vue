@@ -20,11 +20,10 @@ export default {
         'app-drawer-menu': DrawerMenu,
     },
     created() {
-        // get localStorage
         const dataLocal = localStorage.getItem('MNSHOP');
         if (dataLocal) {
             const storage = JSON.parse(dataLocal);
-            // Load local cart
+            // Load cart
             const items = storage.items;
             if (items) {
                 this.$store.dispatch('cart/getCartFromLocal', items);
@@ -37,11 +36,9 @@ export default {
             } else {
                 this.$store.commit('app/SET_SHOW_MENU', true)
             }
+        } else {
+            this.$store.commit('app/SET_SHOW_MENU', true)
         }
-        // get products
-        this.$store.dispatch('product/getProducts')
-        // get categories
-        this.$store.dispatch('filter/getCategories')
     },
     computed: {
         ...mapGetters({

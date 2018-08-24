@@ -14,12 +14,9 @@
     "vue": "^2.5.2",
     "vue-content-placeholders": "^0.2.1",
     "vue-gallery-slideshow": "^1.2.3",
-    "vue-lory": "0.0.5",
     "vue-meta": "^1.5.2",
-    "vue-progressive-image": "^3.1.0",
     "vue-router": "^3.0.1",
     "vue-social-sharing": "^2.3.3",
-    "vuelayers": "^0.10.13",
     "vuetify": "^1.1.0",
     "vuex": "^3.0.1"
   },

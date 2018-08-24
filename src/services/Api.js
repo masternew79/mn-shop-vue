@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-export default() => {
-    return axios.create({
-        baseURL: `https://masternew.herokuapp.com/mn-shop/api/v1`,
-    })
-}
+const instance = axios.create({
+    baseURL: `https://masternew.herokuapp.com/mn-shop/api/v1/`
+})
+
+export default instance

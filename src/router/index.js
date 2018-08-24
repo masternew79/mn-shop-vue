@@ -8,6 +8,7 @@ const Checkout = () => import('@/components/Checkout/Checkout')
 const ProductDetail = () => import('@/components/Product/ProductDetail')
 const Cart = () => import('@/components/Cart')
 const ChangePassword = () => import('@/components/User/ChangePassword')
+const ForgotPassword = () => import('@/components/User/ForgotPassword')
 const LoginPage = () => import('@/components/User/LoginPage')
 const Register = () => import('@/components/User/Register')
 const Error404 = () => import('@/components/Error404')
@@ -20,6 +21,7 @@ Vue.use(Router)
 Vue.use(Meta)
 
 const router = new Router({
+    base: process.env.environment === 'development' ? '/' : '/mn-shop-vue/',
     routes: [
         {
             path: '/',
@@ -30,7 +32,6 @@ const router = new Router({
             path: '/checkout',
             name: 'checkout',
             component: Checkout,
-            // beforeEnter: CartGuard
         },
         {
             path: '/product/:id',
@@ -38,10 +39,15 @@ const router = new Router({
             component: ProductDetail
         },
         {
-            path: '/changepassword',
+            path: '/changePassword',
             component: ChangePassword,
             name: 'changePassword',
             beforeEnter: AuthGuard
+        },
+        {
+            path: '/forgotPassword',
+            component: ForgotPassword,
+            name: 'forgotPassword',
         },
         {
             path: '/login',

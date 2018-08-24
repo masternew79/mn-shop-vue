@@ -1,4 +1,4 @@
-import axios from 'axios'
+import ProductService from '../../services/product-service'
 
 const state = {
     items: [],
@@ -80,7 +80,8 @@ const actions = {
     },
     getCartFromLocal({ dispatch }, items) {
         items.forEach(item => {
-            axios.get(`https://masternew.herokuapp.com/mn-shop/api/v1/products/${item._id}`)
+            ProductService
+                .getProduct(item._id)
                 .then(
                     response => {
                         const data = response.data.data

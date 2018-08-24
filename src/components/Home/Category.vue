@@ -2,7 +2,8 @@
     import { mapGetters, mapState } from 'vuex'
 
     export default {
-        mounted() {
+        created() {
+            this.$store.dispatch('filter/getCategories')
             if (this.$route.query.cate) {
                 // When user refresh or first time visit link
                 this.switchCategories.push(this.$route.query.cate)
@@ -25,7 +26,7 @@
             ...mapGetters({
                 categories: 'filter/categories',
                 progressLinear: 'app/progressLinear',
-                query: 'filter/query' // params query on url
+                query: 'filter/queryParams' // params query on url
             }),
         },
         watch: {
@@ -65,7 +66,6 @@
         }
     }
 </script>
-
 
 <template>
     <v-layout row wrap class="filter pl-3 text-xs-center">

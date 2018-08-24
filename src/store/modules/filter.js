@@ -1,4 +1,5 @@
 import axios from 'axios'
+import ProductService from '../../services/product-service'
 
 const state = {
     categories: [],
@@ -75,7 +76,7 @@ const mutations = {
 const actions = {
     async getCategories({commit, dispatch}) {
         try {
-            const response = await axios.get('https://masternew.herokuapp.com/mn-shop/api/v1/categories')
+            const response = await ProductService.getCategories()
             commit('SET_CATEGORIES', response.data)
         } catch (error) {
             let message = "Can't get categories"

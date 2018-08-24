@@ -116,7 +116,7 @@
                     </v-list-tile>
                     <v-list-tile
                         router
-                        to="/changepassword">
+                        to="/changePassword">
                         <v-list-tile-title class="text-xs-left black--text font-weight-bold body-2">
                             <v-icon color="black">edit</v-icon>
                             CHANGE PASSWORD

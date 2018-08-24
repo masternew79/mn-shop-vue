@@ -10,7 +10,7 @@
 export default {
     computed: {
         loading() {
-            return this.$store.getters['app/loading']
+            return this.$store.getters['app/progressCircle']
         }
     }
 }

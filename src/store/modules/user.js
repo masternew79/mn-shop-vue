@@ -1,4 +1,4 @@
-import axios from 'axios'
+import UserService from '../../services/user-service'
 import router from './../../router'
 
 const state = {
@@ -37,6 +37,7 @@ const mutations = {
             state.refreshToken = ''
             state.id = ''
             state.email = ''
+            state.favorites = []
         }
         state.authenticated = status
     },
@@ -46,13 +47,12 @@ const actions = {
     async register({commit, dispatch}, newUser) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         try {
-            await axios.post(`https://masternew.herokuapp.com/mn-shop/api/v1/users/register`, newUser)
-
+            await UserService.register(newUser)
             router.push({name: 'login'})
-            const message = "Login successfully."
+            const message = "Register successfully."
             dispatch('app/showSnackbar', {message, color: 'teal'}, {root: true})
         } catch (error) {
-            const message = error.response.data || "Opps! Something went wrong"
+            const message = error.response.data || "Something went wrong"
             dispatch('app/showSnackbar', {message}, {root: true})
         }
         commit('app/SET_PROGRESS_LINEAR', false, { root: true})
@@ -60,7 +60,7 @@ const actions = {
     async login({commit, dispatch}, user) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         try {
-            let response = await axios.post(`https://masternew.herokuapp.com/mn-shop/api/v1/users/login`, user)
+            let response = await UserService.login(user)
             dispatch('setUser', response.data)
             dispatch('changeAuthentication', true)
 
@@ -80,19 +80,14 @@ const actions = {
     },
     async relogin({commit, dispatch}, storage) {
         try {
-            let response = await axios({
-                method: 'post',
-                url: 'https://masternew.herokuapp.com/mn-shop/api/v1/users/relogin',
-                data: { refreshToken: storage.refreshToken },
-                headers: { Authorization: `Bareer ${storage.token}` }
-            })
+            const response = await UserService.relogin(storage)
+            commit('app/SET_SHOW_MENU', true, { root: true })
             dispatch('setUser', response.data)
             dispatch('changeAuthentication', true)
         } catch (error) {
             commit('app/SET_SHOW_MENU', true, {root: true})
             dispatch('changeAuthentication', false)
         }
-        commit('app/SET_SHOW_MENU', false, { root: true })
     },
     logout({dispatch}) {
         dispatch('changeAuthentication', false)
@@ -102,34 +97,31 @@ const actions = {
     },
     changeAuthentication({commit, dispatch}, status) {
         commit('SET_AUTHENTICATED', status)
-
         dispatch('app/setLocalStorage', null, {root: true})
     },
     setUser({commit}, userData) {
+        commit('product/SET_FAVORITES', userData.favorites, {root: true})
         commit('SET_ID', userData._id)
         commit('SET_TOKEN', userData.token)
         commit('SET_EMAIL', userData.email)
         commit('SET_REFRESH_TOKEN', userData.refreshToken)
-        commit('product/SET_FAVORITES', userData.favorites, {root: true})
     },
-    async changePassword({rootState, dispatch}, data) {
+    async changePassword({commit, rootState, dispatch}, data) {
         commit('app/SET_PROGRESS_LINEAR', true, { root: true})
         try {
-            await axios({
-                method: 'POST',
-                url: `https://masternew.herokuapp.com/mn-shop/api/v1/users/${rootState.user.id}/changepassword`,
-                data: data,
-                headers: { Authorization: `Bareer ${rootState.user.token}` }
-            })
-
+            const payload = {
+                userId: rootState.user.id,
+                token: rootState.user.token,
+                data
+            }
+            await UserService.changePassword(payload)
             const message = "Change password successfully"
             dispatch('app/showSnackbar', {message, color: 'teal'}, {root: true})
         } catch (error) {
-
             const message = error.response.data.message || "Opps! Something went wrong"
             dispatch('app/showSnackbar', {message}, {root: true})
         }
-        commit('app/SET_PROGRESS_LINEAR', true, { root: true})
+        commit('app/SET_PROGRESS_LINEAR', false, { root: true})
     }
 }
 

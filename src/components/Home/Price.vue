@@ -87,7 +87,6 @@
                 if (!this.switchUnder5M && !this.switchFrom5mTo25M && !this.switchOver25M) {
                     this.switchAll = true;
                 }
-
             },
             switchOver25M() {
                 if (this.switchOver25M) {
